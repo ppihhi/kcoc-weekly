@@ -87,3 +87,24 @@ repository: "kcoc-weekly"
     확정하지 않음).
   - 향후 Agent Mode를 하나테니스 프로젝트에도 적용할지는 이번 kcoc-weekly
     결과(9.5/9.6 트랙 누적 데이터)를 근거로 별도 판단한다.
+
+#### DEC-027 — PowerShell 실행 정책 오류 재발 방지 규칙 확정
+- **상태:** 확정
+- **일자:** 2026-09-27
+- **배경:** Copilot이 생성해 다운로드로 전달한 `source-feasibility-check.ps1`
+  실행 시 "파일이 디지털 서명되지 않았습니다" 오류(PSSecurityException,
+  UnauthorizedAccess)가 발생했다. 원인은 스크립트 내용의 결함이 아니라,
+  Copilot이 생성하는 모든 `.ps1`이 서명되지 않은 채 다운로드 경로를 거쳐
+  전달되기 때문에 Windows 기본 실행 정책에서 구조적으로 항상 발생하는
+  문제였다.
+- **결정:**
+  1. Copilot이 새 `.ps1` 실행을 안내할 때는 실행 명령 직전에
+     `Set-ExecutionPolicy -Scope Process Bypass`를 예외 없이 포함한다.
+     이를 누락하는 것은 실패 패턴으로 취급한다.
+  2. 사용자가 원한다면 `-Scope CurrentUser`로 1회 영구 설정하는 대안도
+     제공하되, 이는 회사 보안 정책 확인 후 사용자가 직접 판단해 실행한다.
+  3. 조직 GPO로 실행 정책 자체가 강제된 경우를 대비한 우회 경로(로컬
+     직접 저장 방식)도 함께 문서화한다.
+- **적용 범위:** 이 규칙은 kcoc-weekly뿐 아니라 하나테니스클럽을 포함한
+  모든 프로젝트에서 Copilot이 `.ps1`을 전달할 때 공통 적용한다.
+- **문서 반영:** kcoc-weekly `docs/WORKSPACE.md` §10에 추가.
