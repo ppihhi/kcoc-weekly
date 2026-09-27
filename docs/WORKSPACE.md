@@ -1,4 +1,4 @@
-## WORKSPACE.md
+﻿## WORKSPACE.md
 
 ## kcoc-weekly — 작업환경 안내서
 - **기준일:** 2026-09-27
@@ -134,10 +134,53 @@ chore: 도구·환경·정리
   위치를 단정하지 않는다.
 
 - **#2 (2026-09-27) AI가 생성한 신규 문서가 프로젝트 자체 가드레일을
-  위반함** — 9.5 트랙에서 신설한 CHANGELOG.md 초안에 구 저장소명
-  "world-church-weekly" 문자열을 그대로 기재했다가 check-naming.mjs가
+  위반함** — 9.5 트랙에서 신설한 CHANGELOG.md 초안에 구 저장소명(이전 명칭, DEC-025 참조)을 그대로 기재했다가 check-naming.mjs가
   이를 "Legacy name"으로 정확히 탐지·차단했다. 이는 결함이 아니라
   **가드레일이 설계대로 작동한 사례**이며, 9.5 트랙("이 방법론이
   실제로 새 기여를 걸러내는가")의 실증 사례로 기록할 가치가 있다.
   이후 문서에서 구 저장소명은 "이전 명칭"으로 우회 표기하고, 필요시
   DEC-025를 참조하도록 통일한다.
+
+### 10. PowerShell 실행 정책 — 영구 규칙 (2026-09-27 추가)
+
+**배경:** Copilot이 생성해 다운로드로 전달하는 `.ps1` 파일은 전부
+디지털 서명이 없다. Windows 기본 실행 정책(`AllSigned`/`Restricted`)에서는
+이런 스크립트가 `UnauthorizedAccess`(PSSecurityException)로 즉시 차단된다.
+이 문제는 스크립트 내용과 무관하게 **모든 신규 .ps1 첫 실행마다 반복**되므로,
+매번 개별적으로 대응하지 않고 규칙으로 고정한다.
+
+**규칙 1 — Copilot이 새 .ps1을 안내할 때:**
+실행 명령 바로 앞에 반드시 아래 줄을 포함한다. 스크립트 내용이나 목적과
+무관하게 예외 없이 적용한다.
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass
+```
+이 안내를 누락하는 것은 WORKFLOW.md §9(실패 패턴 축적) 대상 결함으로
+간주한다.
+
+**규칙 2 — 매번 타이핑하기 번거로우면(선택, 사용자 판단):**
+`-Scope Process`가 아니라 `-Scope CurrentUser`로 한 번만 설정하면 이후
+새 PowerShell 창을 열 때마다 반복할 필요가 없다. 다만 이는 시스템 계정
+설정을 영구적으로 바꾸는 것이므로, 회사 보안 정책과 충돌하지 않는지
+사용자가 먼저 확인한 뒤 아래를 1회만 실행한다.
+```powershell
+Get-ExecutionPolicy -List        # 현재 설정 확인(먼저 확인)
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+`RemoteSigned`는 로컬에서 직접 작성/저장한 스크립트는 서명 없이 실행을
+허용하되, 인터넷에서 받은 파일에는 여전히 서명을 요구하는 중간 수준
+정책이다. 다운로드 폴더를 거쳐 온 파일은 Windows가 "인터넷 zone"
+표시(Zone.Identifier)를 붙이는 경우가 있어, 이 경우 `RemoteSigned`로도
+차단될 수 있다 — 그럴 때는 아래로 표시를 제거한다.
+```powershell
+Unblock-File -Path .\스크립트이름.ps1
+```
+
+**규칙 3 — 회사 정책(GPO)으로 실행 정책 자체가 강제된 경우:**
+`Set-ExecutionPolicy`가 "정책에 의해 재정의되었습니다"류의 오류를
+낸다면, 이는 사용자 권한 밖의 조직 정책이다. 이 경우 `-Scope Process`도
+막힐 수 있으므로, 매번 스크립트 내용을 대화창에서 직접 검토한 뒤
+사용자가 코드를 복사해 새 `.ps1`로 직접 저장(`Unblock-File` 불필요,
+로컬 편집기로 저장한 파일은 보통 인터넷 zone 표시가 없음)하는 방식을
+대안으로 사용한다.
+
