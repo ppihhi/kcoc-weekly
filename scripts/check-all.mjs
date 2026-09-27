@@ -1,0 +1,1 @@
+import {spawnSync} from "node:child_process";for(const s of ["check-static.mjs","check-content.mjs","check-links.mjs","check-naming.mjs"]){const r=spawnSync(process.execPath,[`scripts/${s}`],{stdio:"inherit"});if(r.status)process.exit(r.status)}console.log("ALL CHECKS PASSED");

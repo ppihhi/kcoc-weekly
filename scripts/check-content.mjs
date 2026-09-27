@@ -1,0 +1,1 @@
+import fs from "node:fs";const p=JSON.parse(fs.readFileSync("config/project.json","utf8"));if(p.repositoryName!=="kcoc-weekly"||p.minimumPageCount!==5||p.maximumPageCount!==10||p.publicationDay!=="SATURDAY"||p.officialAffiliation!==false)process.exit(1);console.log("OK content policy");

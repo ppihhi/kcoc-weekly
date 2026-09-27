@@ -1,0 +1,21 @@
+{
+  "sources": [
+    {
+      "id": "disciples-today",
+      "name": "Disciples Today",
+      "baseUrl": "https://disciplestoday.org/",
+      "collectionPriority": [
+        "rss",
+        "wordpress-rest",
+        "html"
+      ],
+      "reusePolicy": {
+        "copyOriginalImage": false,
+        "republishFullText": false,
+        "provideOriginalLink": true,
+        "showSourceName": true
+      },
+      "enabled": true
+    }
+  ]
+}

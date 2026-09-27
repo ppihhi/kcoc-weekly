@@ -1,0 +1,19 @@
+{
+  "weights": {
+    "freshness": 20,
+    "koreanReaderRelevance": 20,
+    "spiritualEducationalValue": 20,
+    "visualPotential": 15,
+    "internationalDiversity": 10,
+    "constructiveMessage": 10,
+    "sourceClarity": 5
+  },
+  "penalties": {
+    "expiredEvent": -30,
+    "jobPosting": -25,
+    "tooShort": -20,
+    "sensitivePersonalInformation": -30,
+    "unclearRights": -10,
+    "repeatedTopic": -15
+  }
+}

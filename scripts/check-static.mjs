@@ -1,0 +1,1 @@
+import fs from "node:fs";const required=["public/index.html","public/about/index.html","public/archive/index.html","public/policy/index.html","config/project.json","docs/PROJECT_CONTEXT.md"];const missing=required.filter(p=>!fs.existsSync(p));if(missing.length){console.error("Missing:",missing);process.exit(1)}console.log("OK static",required.length);

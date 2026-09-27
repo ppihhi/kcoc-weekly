@@ -1,0 +1,17 @@
+{
+  "projectName": "함께 보는 세계교회",
+  "englishName": "World Church Weekly",
+  "repositoryName": "kcoc-weekly",
+  "publisherType": "personal-nonprofit-independent",
+  "officialAffiliation": false,
+  "language": "ko",
+  "timezone": "Asia/Seoul",
+  "defaultPageCount": 8,
+  "minimumPageCount": 5,
+  "maximumPageCount": 10,
+  "publicationCycle": "weekly",
+  "publicationDay": "SATURDAY",
+  "primaryChannel": "web",
+  "secondaryChannel": "kakao-manual",
+  "analyticsEnabled": false
+}

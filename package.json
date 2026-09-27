@@ -1,0 +1,20 @@
+{
+  "name": "kcoc-weekly",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "함께 보는 세계교회 무료 비영리 독립 웹 카드뉴스",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "check:static": "node scripts/check-static.mjs",
+    "check:content": "node scripts/check-content.mjs",
+    "check:links": "node scripts/check-links.mjs",
+    "check:naming": "node scripts/check-naming.mjs",
+    "check:all": "node scripts/check-all.mjs",
+    "build": "node scripts/build-site.mjs",
+    "collect": "node scripts/collect-articles.mjs",
+    "test": "npm run check:all"
+  }
+}

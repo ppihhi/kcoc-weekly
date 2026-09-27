@@ -1,0 +1,16 @@
+{
+  "requiredIssueStatus": "APPROVED",
+  "allowedIssueTypes": [
+    "multi",
+    "single",
+    "inb"
+  ],
+  "requiredCardTypes": [
+    "cover",
+    "source"
+  ],
+  "originalImageReuse": false,
+  "fullTextRepublication": false,
+  "aiAutoPublish": false,
+  "unofficialNoticeRequired": true
+}
