@@ -196,6 +196,41 @@ test("decodeEntities: 스마트 따옴표(&#8217;)를 올바른 유니코드 문
   assert.equal(result, "Minister\u2019s Wellness Webinar");
 });
 
+// ---- 2026-09-27 실제 발견된 회귀 사례 (WordPress 피드 상투구 미제거) ----
+// 사용자가 실제로 겪은 정확한 사례: 요약 끝에 "The post ... appeared
+// first on Disciples Today ." 광고성 상투구가 그대로 노출되었다.
+test("stripFeedBoilerplate: WordPress 'The post ... appeared first on' 상투구를 제거한다", () => {
+  const raw =
+    "Here is the INB for this week! The International News Bulletin is a service to help connect disciples and churches… The post International NewsBulletin September 27, 2026 appeared first on Disciples Today .";
+  const result = impl.stripFeedBoilerplate(raw);
+  assert.ok(!result.includes("The post"));
+  assert.ok(!result.includes("appeared first on"));
+  assert.equal(
+    result,
+    "Here is the INB for this week! The International News Bulletin is a service to help connect disciples and churches…"
+  );
+});
+
+test("stripFeedBoilerplate: 상투구가 없는 텍스트는 그대로 둔다", () => {
+  const clean = "This is a normal sentence without any boilerplate.";
+  assert.equal(impl.stripFeedBoilerplate(clean), clean);
+});
+
+test("truncateAtSentence: 문장 경계에서 자르고 중간에서 끊지 않는다", () => {
+  const text =
+    "First sentence here. Second sentence continues on and on with more words to push past the limit boundary for testing purposes clearly.";
+  const result = impl.truncateAtSentence(text, 30);
+  assert.ok(
+    result.endsWith(".") || result.endsWith("…"),
+    `문장부호로 끝나야 합니다: "${result}"`
+  );
+});
+
+test("truncateAtSentence: 짧은 텍스트는 그대로 반환한다", () => {
+  const short = "짧은 텍스트.";
+  assert.equal(impl.truncateAtSentence(short, 300), short);
+});
+
 console.log(
   "\n참고: 이 테스트는 정책 기준값의 독립성과 RSS 구조 파싱 가능성만 " +
     "확인합니다. 실제 네트워크 호출(disciplestoday.org 접속)은 하지 " +

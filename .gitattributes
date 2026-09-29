@@ -1,0 +1,46 @@
+# .gitattributes
+# 목적: core.autocrlf 등 로컬 Git 설정과 무관하게, 파일 형식별 줄바꿈을
+# 강제해 WORKSPACE.md §14(파일 형식별 UTF-8/줄바꿈 저장 규칙)가 clone·
+# checkout 시에도 깨지지 않도록 고정한다.
+# 배경: 2026-09-29 Gemini 번역 파이프라인 FIX SPEC 커밋 준비 중, git add
+# 단계에서 .mjs/.json/.md/.gitignore 전부에 "LF will be replaced by CRLF"
+# 경고가 발생함을 확인했다. 커밋 객체 자체는 LF로 정규화되어 저장되지만,
+# 이 저장소를 다시 clone하거나 checkout하면 로컬 Git 설정에 따라 조용히
+# CRLF로 재변환될 수 있어, 다음에도 재발할 수 있는 잠재적 인코딩 손상
+# 위험으로 보고 이 파일을 도입한다.
+
+# 기본값: 텍스트 파일은 자동 감지하되 저장소 내부 표준은 LF로 통일한다.
+* text=auto eol=lf
+
+# Node.js / 데이터 파일 — WORKSPACE.md §14: BOM 없이, LF로 저장한다.
+*.mjs text eol=lf
+*.js  text eol=lf
+*.cjs text eol=lf
+*.json text eol=lf
+*.jsonc text eol=lf
+
+# Markdown 문서 — 기존 인코딩과 줄바꿈을 유지하는 것이 원칙이지만,
+# 신규/갱신 커밋 기준으로는 LF로 통일해 diff 노이즈를 줄인다.
+*.md text eol=lf
+
+# 설정/기타 텍스트 파일
+.gitignore text eol=lf
+.gitattributes text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+
+# PowerShell 스크립트 — WORKSPACE.md §14: Copilot이 전달하는 배포/운영용
+# .ps1은 UTF-8 BOM 포함이 기본이며, Windows 환경 특성상 CRLF를 유지한다.
+*.ps1 text eol=crlf
+
+# 바이너리 파일 — 줄바꿈 변환 대상에서 완전히 제외한다.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.pdf binary

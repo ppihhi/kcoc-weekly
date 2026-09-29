@@ -152,6 +152,36 @@ function extractImageUrl(itemXml) {
   return null;
 }
 
+// 2026-09-27 실측 발견: WordPress(Jetpack 등)는 RSS의 description/
+// content:encoded 끝에 "The post {제목} appeared first on {사이트명} ."
+// 상투구를 자동으로 붙인다. 이를 걸러내지 않으면 요약에 광고성 문구가
+// 섞여 나온다. "The post"가 실제 기사 본문에 등장할 가능성은 낮고,
+// "appeared first on"과 결합된 패턴은 이 상투구에 매우 특이적이라
+// 오탐 위험이 낮다.
+function stripFeedBoilerplate(text) {
+  if (!text) return text;
+  return text
+    .replace(/\s*The post\b[\s\S]*?\bappeared first on\b[\s\S]*$/i, "")
+    .trim();
+}
+
+// 2026-09-27 추가: 문자수로 무자비하게 자르면 문장 중간에서 끊긴다.
+// 가능하면 마지막 문장부호(. ! ?) 위치까지만 남기고, 그 지점이 너무
+// 짧으면(원문 손실이 과도하면) 원래 방식(말줄임표)으로 대체한다.
+function truncateAtSentence(text, maxLen = 300) {
+  if (!text || text.length <= maxLen) return text;
+  const cut = text.slice(0, maxLen);
+  let lastBoundary = -1;
+  for (const ch of [".", "!", "?"]) {
+    const idx = cut.lastIndexOf(ch);
+    if (idx > lastBoundary) lastBoundary = idx;
+  }
+  if (lastBoundary > maxLen * 0.4) {
+    return cut.slice(0, lastBoundary + 1).trim();
+  }
+  return cut.trim() + "…";
+}
+
 function stripHtml(html) {
   if (!html) return "";
   return html
@@ -169,6 +199,10 @@ function parseRssItems(xml) {
     const pubDateRaw = extractTag(block, "pubDate");
     const creator = extractTag(block, "dc:creator");
     const description = extractTag(block, "description");
+    // content:encoded는 WordPress가 전체 본문을 담는 표준 태그다. 존재하면
+    // description(대개 더 거친 자동 발췌)보다 나은 요약 재료로 우선
+    // 사용한다. 없으면 description으로 안전하게 대체한다.
+    const contentEncoded = extractTag(block, "content:encoded");
     const categories = extractAllTags(block, "category");
     const imageUrl = extractImageUrl(block);
 
@@ -178,7 +212,9 @@ function parseRssItems(xml) {
 
     // CONTENT_POLICY: 전문 번역 금지 — description(발췌/요약)만 보존,
     // content:encoded(본문 전체)는 의도적으로 사용하지 않는다.
-    const summarySource = stripHtml(description).slice(0, 500);
+    const rawSource = contentEncoded || description || "";
+    const cleaned = stripFeedBoilerplate(stripHtml(rawSource));
+    const summarySource = truncateAtSentence(cleaned, 300);
 
     return {
       title,
@@ -327,6 +363,8 @@ export {
   extractTag,
   extractAllTags,
   stripHtml,
+  stripFeedBoilerplate,
+  truncateAtSentence,
   withinLookback,
   computeHash,
   mergeArticles,

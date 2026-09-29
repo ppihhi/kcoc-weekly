@@ -1,4 +1,4 @@
-node_modules/
+﻿node_modules/
 .env
 .env.*
 !.env.example
@@ -6,3 +6,15 @@ node_modules/
 playwright-report/
 test-results/
 *.log
+
+
+# 2026-09-27 추가 — 번역 파이프라인 API 키 보호
+# (.env, .env.local은 위 .env.* 패턴에 이미 포함되어 중복 생략함)
+*.key
+*.pem
+*apikey*
+*api-key*
+*API_KEY*
+*API-KEY*
+
+*.bak
