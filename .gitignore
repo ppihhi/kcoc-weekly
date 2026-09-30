@@ -17,4 +17,8 @@ test-results/
 *API_KEY*
 *API-KEY*
 
-*.bak
+*.baksetup-cardnews.ps1
+setup-env-loader.ps1
+setup-translation-pipeline.ps1
+test-real-translation.ps1
+gitignore-cleanup.ps1
