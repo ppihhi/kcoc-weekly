@@ -22,3 +22,4 @@ setup-env-loader.ps1
 setup-translation-pipeline.ps1
 test-real-translation.ps1
 gitignore-cleanup.ps1
+content/issues/*/preview/
